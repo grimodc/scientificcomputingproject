@@ -395,7 +395,9 @@ md"""
 # ╔═╡ 82651b4c-5f5f-4e83-8738-6144e533c9a5
 md"""
 > **Answer 6:** \
-> @TODO
+> Une matrice est de Haar si elle est invariante par multiplication, de n'importe quel côté, par une matrice orthogonale. Cela signifie concrètement que la distribution aléatoire des coefficients de la matrice est correctement répartie et ne favorise aucune direction par rapport à une autre.
+>
+> La définition nous donne donc un critère permettant d'éviter un phénomène présenté dans l'article 3bis : la génération de matrices orthogonales aléatoires par le processus de la factorisation QR introduit un biais dépendant de l'algorithme utilisé pour calculer cette factorisation.
 
 ---
 """
@@ -438,13 +440,18 @@ begin
 - `n::Int` : The number of columns
 """
 function own_random(m::Int, n::Int)::Array
-	A = rand(m, n)
+	A = randn(m, n) #changement de rand en rand pour distribution gaussienne
 	
 	# Generate a orthogonal factor of A
 	Q, R = qr(A)
-	print("Q avant : ", Q)
 	Q = Matrix(Q)
-	print("\n Q après : ", Q)
+
+	##tentative de correction
+	#idée : multiplier par l'inverse
+	d = diag(R)
+    L = diagm(d ./ abs.(d))
+    Q = Q * L
+	
 	return Q
 end
 end
@@ -454,8 +461,8 @@ begin
 	# To test the function
 	
 	# Run many times the cell (Shift + Enter) to ensure the matrix is ra#ndom.
-	#Beta = own_random(large_rows,large_cols)
-	Betatests = own_random(2,2)
+	Beta = own_random(large_rows,large_cols)
+	#Betatests = own_random(2,2)
 	#print(Betatests)
 	nothing
 end
@@ -3243,7 +3250,7 @@ version = "1.9.2+0"
 # ╟─75ee77ca-1f40-427a-b483-ec68c68ea491
 # ╟─82651b4c-5f5f-4e83-8738-6144e533c9a5
 # ╟─1a1ffc32-a583-4ab9-94c1-7546b1c60733
-# ╠═5977bb03-1b8c-4cc3-9ee3-bbdb6deedbe7
+# ╟─5977bb03-1b8c-4cc3-9ee3-bbdb6deedbe7
 # ╟─3702b36e-fd82-4ed9-a659-5704e885ff85
 # ╠═4683b60e-9190-49ea-b0e4-641f02198dab
 # ╠═29d2aae4-2aa4-4966-b970-816c6d04025c
